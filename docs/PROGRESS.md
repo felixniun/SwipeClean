@@ -27,12 +27,17 @@
 
 ### 测试结果
 
-- ❌ 未运行（Windows 无 Swift 工具链）。测试需在 macOS/Xcode 中首次运行。
+- ✅ **Windows 本地逻辑测试：65 通过 / 0 失败**（2026-10-04）。
+  - 方式：Swift 6.4 Windows 工具链（scoop）+ VS Build Tools 2022（MSVC + WinSDK）。
+  - `build-windows.cmd` 以 swiftc 整模块编译（SwiftPM 在本机环境有问题，未使用）；`run-tests.cmd` 运行 `WindowsTests/main.swift`（Windows 无 XCTest，用轻量断言 harness 复刻 XCTest 用例）。
+  - 覆盖：导航边界、上滑只标记、队列去重、撤销不可重复、资产失效协调、手势方向强制约定（含放大状态/动画锁定/阈值边界）、持久化往返/损坏/版本校验、恢复协调、Mock 仓库。
+  - **发现并修复 1 个逻辑 bug**：reconcile 在当前资产失效后应寻找"后继位置"而非回到第一张（计划书 5.5.3）。
+- ⏳ XCTest（SwipeCleanTests）仍需在 macOS 上运行作为正式结果。
 
 ### 构建结果
 
-- ❌ 未构建（无 .xcodeproj，需在 macOS 上创建标准工程后挂载源码）。
-- ❌ 未真机测试。
+- ⚠️ Windows：核心逻辑可编译可运行（非正式构建路径）；SwiftUI/PhotoKit 层未编译（需要 macOS）。
+- ❌ Xcode 未构建；❌ 未真机测试。
 
 ### 未解决问题（待用户确认）
 

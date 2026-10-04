@@ -1,5 +1,19 @@
+#if canImport(CoreGraphics)
 import CoreGraphics
 import Foundation
+#else
+// Windows/Linux 测试环境：CGFloat/CGSize 由 Foundation 之外的轻量替身提供
+import Foundation
+public typealias CGFloat = Double
+public struct CGSize: Equatable {
+    public var width: Double
+    public var height: Double
+    public init(width: Double, height: Double) {
+        self.width = width
+        self.height = height
+    }
+}
+#endif
 
 /// 手势阶段（计划书 6.1）。
 enum GesturePhase: Equatable {

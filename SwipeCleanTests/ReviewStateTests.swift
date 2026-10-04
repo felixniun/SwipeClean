@@ -114,9 +114,8 @@ final class ReviewStateTests: XCTestCase {
 
     func testCommitCompleted_removesOnlySuccessfulAssets() {
         var state = makeState()
-        _ = state.markCurrentForDeletion() // a
-        state.goNext()
-        _ = state.markCurrentForDeletion() // b
+        _ = state.markCurrentForDeletion() // a 入队，自动前进到 b
+        _ = state.markCurrentForDeletion() // b 入队，自动前进到 c
         state.commitCompleted(successIDs: ["a"], failedIDs: ["b"])
         XCTAssertEqual(state.deletionQueue.assetIDs, ["b"])
         if case let .completed(success, failed) = state.commitState {

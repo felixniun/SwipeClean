@@ -126,21 +126,40 @@ struct ReviewState {
         completedReviewCount = max(0, completedReviewCount - 1)
         history.push(ReviewAction(actionType: .unmarkDeletion, assetID: action.assetID,
                                   previousAssetID: action.previousAssetID, createdAt: now))
-        history.popLast() // unmark 动作本身不可再撤销，不入栈
+        _ = history.popLast() // unmark 动作本身不可再撤销，不入栈
         return action.assetID
     }
 
     // MARK: - 资产失效协调（计划书 5.5 / 14.2）
 
-    /// 照片库变化后同步本地状态：剔除失效资产，为当前资产寻找合理后继。
+    /// 照片库变化后同步本地状态：剔除失效资产，为当前资产寻找合理后继（计划书 5.5.3）。
     mutating func reconcile(withExisting existingIDs: Set<String>, orderedNewIDs: [String]? = nil) {
-        let newIDs = orderedNewIDs ?? assetIDs.filter { existingIDs.contains($0) }
+        let oldIDs = assetIDs
+        let oldCurrentID = currentAssetID
+        let newIDs = orderedNewIDs ?? oldIDs.filter { existingIDs.contains($0) }
         assetIDs = newIDs
         deletionQueue.retainValid(existing: existingIDs)
-        if let id = currentAssetID, existingIDs.contains(id), newIDs.contains(id) {
+
+        guard let oldID = oldCurrentID else {
+            currentAssetID = newIDs.first
             return
         }
-        currentAssetID = newIDs.first
+        if newIDs.contains(oldID) {
+            currentAssetID = oldID
+            return
+        }
+        // 当前资产已失效：后继优先（旧位置之后第一个仍可见的），其次前驱，最后第一张
+        if let oldIdx = oldIDs.firstIndex(of: oldID) {
+            if let successor = oldIDs[(oldIdx + 1)...].first(where: { newIDs.contains($0) }) {
+                currentAssetID = successor
+            } else if let predecessor = oldIDs[..<oldIdx].reversed().first(where: { newIDs.contains($0) }) {
+                currentAssetID = predecessor
+            } else {
+                currentAssetID = newIDs.first
+            }
+        } else {
+            currentAssetID = newIDs.first
+        }
     }
 
     /// 复核界面：按标识移出队列（不是撤销栈操作）。
