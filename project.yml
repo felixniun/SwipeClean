@@ -1,0 +1,55 @@
+# XcodeGen 工程定义：在 Mac 上执行 `xcodegen generate` 即可生成标准 SwipeClean.xcodeproj。
+# 目的：避免手工在 Xcode 里逐个挂源文件；生成的仍是标准工程，可正常用 Xcode 打开。
+name: SwipeClean
+options:
+  bundleIdPrefix: com.ian
+  deploymentTarget:
+    iOS: "18.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    TARGETED_DEVICE_FAMILY: "1"   # 仅 iPhone
+    CODE_SIGN_STYLE: Automatic
+    # 签名团队在 Mac 上通过 Xcode 登录 Apple ID 后填写，或用环境变量覆盖：
+    # DEVELOPMENT_TEAM: XXXXXXXXXX
+targets:
+  SwipeClean:
+    type: application
+    platform: iOS
+    sources:
+      - path: SwipeClean
+        excludes:
+          - "Info.plist"
+    info:
+      path: SwipeClean/Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSPhotoLibraryUsageDescription: >-
+          SwipeClean 需要读取照片以便你浏览并标记待删除照片。所有处理均在本机完成，照片不会被上传。
+        NSPhotoLibraryAddUsageDescription: >-
+          SwipeClean 不会主动添加照片；此权限仅在需要时由系统请求。
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.ian.swipeclean
+  SwipeCleanTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: SwipeCleanTests
+    dependencies:
+      - target: SwipeClean
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+# macOS 上跑逻辑测试（无 PhotoKit 依赖）也可用：swift test
+schemes:
+  SwipeClean:
+    build:
+      targets:
+        SwipeClean: all
+        SwipeCleanTests: [test]
+    test:
+      targets: [SwipeCleanTests]

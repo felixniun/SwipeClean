@@ -33,13 +33,16 @@
 
 ## 阶段 C：第一次 Xcode 构建（里程碑）
 
-1. 安装 Xcode 16+，克隆仓库。
-2. 在 Xcode 中创建标准 SwiftUI App 工程（Bundle ID：`com.ian.swipeclean`，部署目标 iOS 18），将本仓库 `SwipeClean/SwipeClean/` 与 `SwipeCleanTests/` 下源码挂载进 target。
-3. 配置免费个人开发签名（接受有效期与设备数限制，先不购买开发者会员）。
-4. 连接 iPhone XS Max，构建最小 App 并真机启动。
-5. 将 Xcode 版本、签名方式、结果记录到 `docs/PROGRESS.md`。
+在 Mac 上执行（自动化脚本已备好）：
 
-**验收门槛：真实 iPhone 成功启动最小 App。在此之前所有功能均为"开发中"，不得标记完成。**
+```zsh
+git clone <repo-url> && cd SwipeClean
+zsh setup-mac.sh
+```
+
+脚本完成：环境检查（Xcode 16+ / iOS 18 runtime / xcodegen）→ `xcodegen generate` 生成标准工程（配置见 `project.yml`）→ 模拟器构建启动并截图 → `swift test` 跑 XCTest。之后按脚本末尾清单做真机安装。
+
+也可以在 Mac 上运行 ZCode 并启用 `ios-simulator` 插件（`enabledPlugins: ios-simulator@zcode-plugins-official`），由 Agent 用 `ios_preflight / ios_discover_project / ios_build_and_run / ios_screenshot` 完成同样的验证与 UI 自动化。
 
 ## 安全红线
 
