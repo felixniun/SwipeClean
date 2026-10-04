@@ -1,0 +1,45 @@
+# macOS / Xcode
+.DS_Store
+*.swp
+*~
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+DerivedData/
+build/
+Build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+.build/
+
+# Signing & secrets — 绝不入库
+*.mobileprovision
+*.p12
+*.cer
+*.pem
+*.key
+secrets/
+AuthKey*.p8
+
+# Personal data — 绝不入库
+*.heic
+*.jpg
+*.jpeg
+*.png
+!Resources/**/*.png
+*.mov
+*.mp4
+
+# Windows
+Thumbs.db
+Desktop.ini
+.vs/
+.vscode/
+
+# Misc
+*.log
